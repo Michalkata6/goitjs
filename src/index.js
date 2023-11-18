@@ -2,31 +2,55 @@ import fetchCountries from './fetchCountries';
 import debounce from 'lodash.debounce';
 import Notiflix from 'notiflix';
 
-const searchBox = document.getElementById("search-box");
-const countryList = document.getElementById("country-list");
-const countryDetails = document.getElementById("country-details");
-const buttonElement = document.querySelector('.btn-load');
-
-
     const API_URL = `https://restcountries.com/v3.1/name/${searchTerm}?fields=name,capital,population,flags,languages`; 
 
     let lastSearchTerm = "";
 
-   
-    function filterFields(countryData) {
-      return {
-        name: countryData.name.official,
-        capital: countryData.capital,
-        population: countryData.population,
-        flags: {
-          svg: countryData.flags.svg,
-        },
-        languages: countryData.languages,
-      };
+    function searchCountry() {
+      const input = document.getElementById('searchInput').value.trim();
+      if (input !== '') {
+        const searchTerm = encodeURIComponent(input); 
+     
+        fetch(apiUrl)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('No matching countries found.');
+            }
+            return response.json();
+          })
+          .then(data => {
+            displayCountryInfo(data);
+          })
+          .catch(error => {
+            displayError(error.message);
+          });
+      } else {
+        displayError('Too many matches found. Please enter a more specific name.');
+      }
     }
-
-  
-    const debounceSearch = debounce((searchTerm) => {
+    
+      
+    
+    function displayCountryInfo(countryData) {
+      const countryInfoDiv = document.getElementById('countryInfo');
+      countryInfoDiv.innerHTML = '';
+    
+      const country = countryData[0];
+      const countryName = country.name.common;
+      const capital = country.capital[0];
+      const population = country.population;
+      const flag = country.flags.svg;
+    
+      const countryInfo = `
+        <h2>${countryName}</h2>
+        <p><strong>Stolica:</strong> ${capital}</p>
+        <p><strong>Populacja:</strong> ${population}</p>
+        <img src="${flag}" alt="Flaga ${countryName}" style="max-width: 200px;">
+      `;
+    
+      countryInfoDiv.innerHTML = countryInfo;
+    }
+    const debounce = debounce((searchTerm) => {
       if (searchTerm.trim() === "") {
         countryList.innerHTML = "";
         countryDetails.innerHTML = "";
