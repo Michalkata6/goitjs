@@ -25,7 +25,7 @@ const searchBox = document.getElementById('search-box')
           data.forEach((country) => {
             const countryItem = document.createElement("div");
             countryItem.innerHTML = `<img src="${country.flags.svg}" alt="${country.name.official}"><p>${country.name.official}</p>`;
-            countryItem.addEventListener("click", () => showCountryDetails(country));
+            
             countryList.appendChild(countryItem);
           });
           } else if (data.length === 1) {
